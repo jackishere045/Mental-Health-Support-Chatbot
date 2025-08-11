@@ -1,28 +1,62 @@
 import streamlit as st
-import openai
 from textblob import TextBlob
 import pandas as pd
+import re
+import unicodedata
+import replicate
+from deep_translator import GoogleTranslator
 
-# Change it to your open ai api key
-openai.api_key = 'your_openai_api_key'
+def translate_to_indonesian(text):
+    try:
+        translated = GoogleTranslator(source='auto', target='id').translate(text)
+        return translated
+    except Exception as e:
+        return f"Translation error: {e}"
 
+replicate_client = replicate.Client()
 
-# Function to generate a response from GPT-3
 def generate_response(prompt):
     try:
-        response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": prompt}
-            ]
+        granite_prompt = (
+            "You are a compassionate mental health support assistant. "
+            "Always respond in Bahasa Indonesia and focus on providing empathetic, helpful advice "
+            "related to mental health, stress, anxiety, depression, and wellbeing. "
+            "Do NOT translate or explain words in English. "
+            "Correct the letters in the word so that there are no missing or extra spaces."
+            f"User input: {prompt}"
         )
-        return response.choices[0].message['content'].strip()
-    except openai.RateLimitError:
-        return "It seems we have reached the API quota limit. Please try again later or check your OpenAI account."
+        output = replicate.run(
+            "ibm-granite/granite-3.3-8b-instruct",
+            input={"prompt": granite_prompt}
+        )
+        if isinstance(output, list):
+            text = ' '.join(s.strip() for s in output)
+        else:
+            text = output.strip()
 
+        text = re.sub(r'\s+', ' ', text)  
+        text = text.strip()
+        return text
 
-# Analyze sentiment
+    except Exception as e:
+        return f"Error saat memanggil model: {e}"
+    
+def clean_response(text):
+    # Hapus teks dalam tanda kurung yang mengandung huruf Inggris
+    text = re.sub(r'\([^()]*[a-zA-Z][^()]*\)', '', text)
+    # Hapus hashtag (#...)
+    text = re.sub(r'#\S+', '', text)
+    # Hapus bagian 'Translation' dan seterusnya
+    text = re.sub(r'Translation:.*', '', text, flags=re.DOTALL)
+    # Bersihkan spasi berlebih
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
+def normalize_whitespace(text):
+    # Ganti semua whitespace unicode ke spasi biasa
+    text = ''.join(' ' if unicodedata.category(c).startswith('Z') else c for c in text)
+    return text
+
 def analyze_sentiment(text):
     analysis = TextBlob(text)
     polarity = analysis.sentiment.polarity
@@ -37,8 +71,6 @@ def analyze_sentiment(text):
     else:
         return "Very Negative", polarity
 
-
-# Provide coping strategies
 def provide_coping_strategy(sentiment):
     strategies = {
         "Very Positive": "Keep up the positive vibes! Consider sharing your good mood with others.",
@@ -49,8 +81,6 @@ def provide_coping_strategy(sentiment):
     }
     return strategies.get(sentiment, "Keep going, you're doing great!")
 
-
-# Disclaimer regarding data privacy
 def display_disclaimer():
     st.sidebar.markdown(
         "<h2 style='color: #FF5733;'>Data Privacy Disclaimer</h2>",
@@ -64,6 +94,68 @@ def display_disclaimer():
         unsafe_allow_html=True
     )
 
+# --- CSS Styling Updated ---
+st.markdown("""
+<style>
+.chat-message {
+    padding: 12px;
+    border-radius: 15px;
+    margin-bottom: 8px;
+    max-width: 70%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    color: white;
+}
+.user-message {
+    background-color: #000000;
+    align-self: flex-end;
+}
+.bot-message {
+    background-color: #222222;
+    align-self: flex-start;
+}
+.user-container {
+    display: flex;
+    justify-content: flex-end;
+}
+.bot-container {
+    display: flex;
+    justify-content: flex-start;
+}
+#chat-input-container {
+    position: fixed;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    padding: 10px 20px;
+    background-color: #f9f9f9;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+    display: flex;
+    gap: 10px;
+    box-sizing: border-box;
+    z-index: 1000;
+}
+#chat-input-container input[type="text"] {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+#chat-input-container button {
+    background-color: #000000;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.title("Mental Health Support Chatbot")
 
 if 'messages' not in st.session_state:
@@ -71,9 +163,33 @@ if 'messages' not in st.session_state:
 if 'mood_tracker' not in st.session_state:
     st.session_state['mood_tracker'] = []
 
-with st.form(key='chat_form'):
-    user_message = st.text_input("You:")
-    submit_button = st.form_submit_button(label='Send')
+# Display chat messages
+chat_placeholder = st.empty()
+
+def render_chat():
+    with chat_placeholder.container():
+        for sender, message in st.session_state['messages']:
+            if sender == "You":
+                st.markdown(f"""
+                <div class="user-container">
+                    <div class="chat-message user-message">{message}</div>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+                <div class="bot-container">
+                    <div class="chat-message bot-message">{message}</div>
+                </div>
+                """, unsafe_allow_html=True)
+
+render_chat()
+
+# Custom input area fixed at bottom using st.markdown and st.form hack
+with st.form(key="chat_form", clear_on_submit=True):
+    st.markdown('<div id="chat-input-container">', unsafe_allow_html=True)
+    user_message = st.text_input("", key="input_text", placeholder="Ketik pesan kamu...")
+    submit_button = st.form_submit_button("Send")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 if submit_button and user_message:
     st.session_state['messages'].append(("You", user_message))
@@ -86,33 +202,15 @@ if submit_button and user_message:
     st.session_state['messages'].append(("Bot", response))
     st.session_state['mood_tracker'].append((user_message, sentiment, polarity))
 
-for sender, message in st.session_state['messages']:
-    if sender == "You":
-        st.text(f"You: {message}")
-    else:
-        st.text(f"Bot: {message}")
-
-# Display mood tracking chart
-if st.session_state['mood_tracker']:
-    mood_data = pd.DataFrame(st.session_state['mood_tracker'], columns=["Message", "Sentiment", "Polarity"])
-    st.line_chart(mood_data['Polarity'])
-
-# Display coping strategies
-if user_message:
-    st.write(f"Suggested Coping Strategy: {coping_strategy}")
-
-# Display resources
-st.sidebar.title("Resources")
-st.sidebar.write("If you need immediate help, please contact one of the following resources:")
-st.sidebar.write("1. National Suicide Prevention Lifeline: 1-800-273-8255")
-st.sidebar.write("2. Crisis Text Line: Text 'HELLO' to 741741")
-st.sidebar.write("[More Resources](https://www.mentalhealth.gov/get-help/immediate-help)")
-
-# Display session summary
-if st.sidebar.button("Show Session Summary"):
-    st.sidebar.write("### Session Summary")
-    for i, (message, sentiment, polarity) in enumerate(st.session_state['mood_tracker']):
-        st.sidebar.write(f"{i + 1}. {message} - Sentiment: {sentiment} (Polarity: {polarity})")
-
-
-display_disclaimer()
+    chat_placeholder.empty()
+    render_chat()
+st.markdown(
+    """
+    <div style="position: fixed; bottom: 0; width: 100%; 
+                text-align: center; padding: 10px; 
+                color: white; font-size: 14px;">
+        Design by <a href="https://jackdev-portofolio.netlify.app/" target="_blank" style="color: #FF5733; text-decoration: none;">jackdev</a>
+    </div>
+    """,
+    unsafe_allow_html=True
+)

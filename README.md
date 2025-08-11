@@ -1,70 +1,71 @@
 # Mental Health Support Chatbot
 
-This project is a Mental Health Support Chatbot built using [Streamlit](https://streamlit.io/) and [OpenAI's GPT-3.5-turbo model](https://platform.openai.com/docs/models/gpt-3-5-turbo). It provides mental health support through a chat interface, offering sentiment analysis, mood tracking, and personalized coping strategies based on user input.
+Proyek ini adalah chatbot pendukung kesehatan mental yang dibangun menggunakan [Streamlit](https://streamlit.io/) dan model GPT-3.5-turbo dari [OpenAI](https://platform.openai.com/docs/models/gpt-3-5-turbo). Chatbot ini menyediakan dukungan kesehatan mental lewat antarmuka percakapan, dengan fitur analisis sentimen, pelacakan suasana hati, dan strategi coping yang dipersonalisasi berdasarkan input pengguna.
 
-## Features
+## Fitur
 
-- **Chat Interface**: Interact with the chatbot in a user-friendly chat interface.
-- **Sentiment Analysis**: Analyze the sentiment of user messages and categorize them into different emotions.
-- **Mood Tracking**: Track the user's mood over time based on their messages.
-- **Coping Strategies**: Provide personalized coping strategies based on the user's emotional state.
-- **Session Summaries**: Summarize the conversation and provide insights at the end of each session.
-- **Helpful Resources**: Provide links to immediate help resources for mental health support.
+- **Antarmuka Chat**: Berinteraksi dengan chatbot dalam antarmuka percakapan yang mudah digunakan.
+- **Analisis Sentimen**: Menganalisis sentimen pesan pengguna dan mengkategorikannya ke dalam emosi yang berbeda.
+- **Pelacakan Suasana Hati**: Melacak suasana hati pengguna dari waktu ke waktu berdasarkan pesan mereka.
+- **Strategi Coping**: Memberikan strategi coping yang dipersonalisasi sesuai kondisi emosional pengguna.
+- **Ringkasan Sesi**: Menyediakan ringkasan percakapan dan wawasan di akhir setiap sesi.
+- **Sumber Bantuan**: Menyediakan tautan ke sumber daya bantuan kesehatan mental yang dapat diakses segera.
 
-## Installation
+## Instalasi
 
-1. **Clone the repository:**
+1. **Clone repository:**
     ```bash
-    git clone https://github.com/Vikranth3140/Mental-Health-Support-Chatbot.git
+    git clone https://github.com/jackdev/Mental-Health-Support-Chatbot.git
     cd Mental-Health-Support-Chatbot
     ```
 
-2. **Create a virtual environment and activate it:**
+2. **Buat virtual environment dan aktifkan:**
     ```bash
     python -m venv env
-    .\env\Scripts\activate
+    .\env\Scripts\activate   # Windows
+    source env/bin/activate  # Mac/Linux
     ```
 
-3. **Install the required packages:**
+3. **Install paket yang dibutuhkan:**
     ```bash
     pip install -r requirements.txt
     ```
 
-4. **Set up your OpenAI API key:**
-    - Obtain your OpenAI API key from [OpenAI](https://platform.openai.com/account/api-keys).
-    - Add your API key to the environment variable `OPENAI_API_KEY` or replace `'your_openai_api_key'` in the code with your actual API key.
+4. **Atur API key AI kamu:**
+    - Dapatkan API key dari API platform milikmu.
+    - Simpan API key di environment variable `"platform"_API_KEY` atau ganti `'your_"platform"_api_key'` di kode dengan API key-mu.
 
-## Usage
+## Cara Menjalankan
 
-1. **Run the Streamlit application:**
+1. Jalankan aplikasi Streamlit:
     ```bash
     streamlit run app.py
     ```
 
-2. **Open the provided URL (typically `http://localhost:8501`) in your web browser.**
+2. Buka URL yang muncul (biasanya http://localhost:8501) di browser.
 
-3. **Start interacting with the chatbot:**
-    - Type your message in the input box and press "Send."
-    - The chatbot will respond to your message, analyze the sentiment, track your mood, and provide coping strategies as needed.
+3. Mulai berinteraksi dengan chatbot:
+    - Ketik pesanmu di kolom input dan tekan "Send".
+    - Chatbot akan merespon, menganalisis sentimen, melacak suasana hati, dan memberikan strategi coping yang sesuai.
 
-## Project Structure
+## Struktur Proyek
 
-- `app.py`: The main application file containing the Streamlit code and logic for the chatbot.
-- `requirements.txt`: List of required Python packages.
+- `app.py` : File utama aplikasi berisi kode Streamlit dan logika chatbot.
+- `requirements.txt` : Daftar paket Python yang diperlukan.
 
-## License
+## Lisensi
 
-This project is licensed under the [MIT License](LICENSE).
+Proyek ini dilisensikan di bawah [MIT License](LICENSE).
 
-## Acknowledgements
+## Penghargaan
 
 - [Streamlit](https://streamlit.io/)
 - [OpenAI](https://openai.com/)
 - [TextBlob](https://textblob.readthedocs.io/en/dev/)
 
-## Resources
+## Sumber Bantuan
 
-If you need immediate help, please contact one of the following resources:
-- National Suicide Prevention Lifeline: 1-800-273-8255
-- Crisis Text Line: Text 'HELLO' to 741741
-- [More Resources](https://www.mentalhealth.gov/get-help/immediate-help)
+Jika kamu membutuhkan bantuan segera, silakan hubungi salah satu sumber berikut:  
+- National Suicide Prevention Lifeline: 1-800-273-8255  
+- Crisis Text Line: Kirim SMS 'HELLO' ke 741741  
+- [Sumber Bantuan Lainnya](https://www.mentalhealth.gov/get-help/immediate-help)
