@@ -12,8 +12,11 @@ def translate_to_indonesian(text):
         return translated
     except Exception as e:
         return f"Translation error: {e}"
+        
+api_token = st.secrets["REPLICATE_API_TOKEN"]
 
-replicate_client = replicate.Client(api_token="r8_8vIO4qlvn9Hw96YG3AEawSZBHt1IOHh0bTG3S")
+# Inisialisasi client dengan token
+replicate_client = replicate.Client(api_token=api_token)
 
 def generate_response(prompt):
     try:
