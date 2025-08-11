@@ -2,3 +2,5 @@ streamlit
 openai
 textblob
 pandas
+replicate
+deep-translator
