@@ -13,7 +13,7 @@ def translate_to_indonesian(text):
     except Exception as e:
         return f"Translation error: {e}"
 
-replicate_client = replicate.Client()
+replicate_client = replicate.Client(api_token="r8_8vIO4qlvn9Hw96YG3AEawSZBHt1IOHh0bTG3S")
 
 def generate_response(prompt):
     try:
