@@ -2,6 +2,7 @@
 
 Proyek ini adalah chatbot pendukung kesehatan mental yang dibangun menggunakan [Streamlit](https://streamlit.io/) dan model GPT-3.5-turbo dari [OpenAI](https://platform.openai.com/docs/models/gpt-3-5-turbo). Chatbot ini menyediakan dukungan kesehatan mental lewat antarmuka percakapan, dengan fitur analisis sentimen, pelacakan suasana hati, dan strategi coping yang dipersonalisasi berdasarkan input pengguna.
 
+# Preview
 ![Preview](https://drive.google.com/uc?export=view&id=1y0ArME4ffBShwEYJyIUsMZWYXKlPaRpu)
 
 ## Fitur
