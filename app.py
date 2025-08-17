@@ -33,12 +33,16 @@ def generate_response(prompt):
             input={"prompt": granite_prompt}
         )
         if isinstance(output, list):
-            text = ' '.join(s.strip() for s in output)
+            text = ''.join(output)  # jangan pakai spasi
         else:
-            text = output.strip()
+            text = output
+
 
         text = re.sub(r'\s+', ' ', text)  
         text = text.strip()
+        final_text = ''.join(output) if isinstance(output, list) else output
+        final_text = fix_tokenization(final_text)
+
         return text
 
     except Exception as e:
@@ -83,6 +87,12 @@ def provide_coping_strategy(sentiment):
         "Very Negative": "I'm sorry to hear that you're feeling very negative. Consider talking to a friend or seeking professional help."
     }
     return strategies.get(sentiment, "Keep going, you're doing great!")
+def fix_tokenization(text):
+    # Gabungkan kata yang kepecah seperti "memaham i" → "memahami"
+    text = re.sub(r'(\w)\s+(\w)', r'\1\2', text)
+    # Hilangkan spasi dobel
+    text = re.sub(r'\s+', ' ', text)
+    return text.strip()
 
 def display_disclaimer():
     st.sidebar.markdown(
@@ -209,10 +219,11 @@ if submit_button and user_message:
     render_chat()
 st.markdown(
     """
-    <div style="position: fixed; bottom: 0; width: 100%; 
-                text-align: center; padding: 10px; 
-                color: white; font-size: 14px;">
-        Design by <a href="https://jackdev-portofolio.netlify.app/" target="_blank" style="color: #FF5733; text-decoration: none;">jackdev</a>
+    <div style="position: fixed; bottom: 30px; left: 50%;
+                transform: translateX(-50%);
+                font-size: 20px; color: white; z-index: 9999;">
+        Built by <a href="https://jackdev-portofolio.netlify.app/" target="_blank" 
+                     style="color: #FF5733; text-decoration: none;">JackDev</a>
     </div>
     """,
     unsafe_allow_html=True
