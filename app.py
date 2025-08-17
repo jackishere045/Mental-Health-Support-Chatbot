@@ -221,7 +221,7 @@ st.markdown(
     """
     <div style="position: fixed; bottom: 30px; left: 50%;
                 transform: translateX(-50%);
-                font-size: 20px; color: white; z-index: 9999;">
+                font-size: 15px; color: white; z-index: 9999;">
         Built by <a href="https://jackdev-portofolio.netlify.app/" target="_blank" 
                      style="color: #FF5733; text-decoration: none;">JackDev</a>
     </div>
